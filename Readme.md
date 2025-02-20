@@ -1,4 +1,4 @@
-**Laboratorio: Simulación de Smart Contract usando Listas Enlazadas**
+**Parcial 1, Estructura de datos: Simulación de Smart Contract usando Listas Enlazadas**
 
 **Objetivo del Laboratorio**
 
