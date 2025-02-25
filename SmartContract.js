@@ -1,41 +1,92 @@
-// importar las clases
-import LinkedList from './LinkedList.js';
-
 class SmartContract {
     constructor() {
-        this.transactions = new LinkedList(); // Lista enlazada para almacenar transacciones
-        this.balances = {}; // Objeto para rastrear los saldos de los usuarios
+        this.properties = [];
+        this.transactions = [];
     }
 
-    // Función para registrar una transacción
-    executeTransaction(sender, receiver, amount) {
-        // Validar que el emisor tenga suficientes fondos
-        if (!this.balances[sender] || this.balances[sender] < amount) {
-            console.log(`Transacción fallida: ${sender} no tiene suficientes fondos.`);
+    // Función para registrar una nueva propiedad
+    async registerProperty(propertyId, owner, location, area, value) {
+        try {
+            // Check if property exists
+            const existingProperty = this.properties.find(p => p.id === propertyId);
+            if (existingProperty) {
+                return false;
+            }
+
+            // Create new property
+            const property = { id: propertyId, owner, location, area, value, status: 'available' };
+            this.properties.push(property);
+
+            // Record transaction
+            const transaction = {
+                property_id: propertyId,
+                type: 'REGISTRO',
+                owner,
+                location,
+                area,
+                value,
+                timestamp: new Date().toISOString()
+            };
+            this.transactions.push(transaction);
+
+            return true;
+        } catch (error) {
+            console.error('Error registering property:', error);
             return false;
         }
-
-        // Actualizar saldos
-        this.balances[sender] -= amount;
-        this.balances[receiver] = (this.balances[receiver] || 0) + amount;
-
-        // Registrar la transacción en la lista enlazada
-        const transactionData = { sender, receiver, amount };
-        this.transactions.addTransaction(transactionData);
-
-        console.log(`Transacción exitosa: ${sender} envió ${amount} a ${receiver}.`);
-        return true;
     }
 
-    // Función para mostrar todas las transacciones
-    showAllTransactions() {
-        console.log("Historial de transacciones:");
-        this.transactions.displayTransactions();
+    // Función para transferir una propiedad
+    async transferProperty(propertyId, currentOwner, newOwner, saleValue) {
+        try {
+            // Verify property ownership
+            const property = this.properties.find(p => p.id === propertyId && p.owner === currentOwner);
+            if (!property) {
+                return false;
+            }
+
+            // Update property owner and status
+            property.owner = newOwner;
+            property.status = 'sold';
+
+            // Record transaction
+            const transaction = {
+                property_id: propertyId,
+                type: 'TRANSFERENCIA',
+                previousOwner: currentOwner,
+                newOwner,
+                saleValue,
+                timestamp: new Date().toISOString()
+            };
+            this.transactions.push(transaction);
+
+            return true;
+        } catch (error) {
+            console.error('Error transferring property:', error);
+            return false;
+        }
     }
 
-    // Función para mostrar los saldos actuales
-    showBalances() {
-        console.log("Saldos actuales:", this.balances);
+    // Función para obtener todas las propiedades
+    async getProperties() {
+        try {
+            return this.properties;
+        } catch (error) {
+            console.error('Error getting properties:', error);
+            return [];
+        }
+    }
+
+    // Función para obtener todas las transacciones
+    async getTransactions() {
+        try {
+            return this.transactions.sort((a, b) => 
+                new Date(b.timestamp) - new Date(a.timestamp)
+            );
+        } catch (error) {
+            console.error('Error getting transactions:', error);
+            return [];
+        }
     }
 }
 
