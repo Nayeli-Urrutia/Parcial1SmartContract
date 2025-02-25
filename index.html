@@ -245,19 +245,19 @@
         <!-- Modal para transferir propiedad -->
         <div id="transferPropertyModal" class="modal">
             <div class="modal-content">
-                <span class="close" onclick="closeModal('transferPropertyModal')">&times;</span>
-                <h2>Comprar Propiedad</h2>
+e su terreno                <span class="close" onclick="closeModal('transferPropertyModal')">&times;</span>
+                <h2 id="transferModalTitle">Comprar Propiedad</h2>
                 <form id="transferPropertyForm" onsubmit="handleTransferProperty(event)">
                     <input type="hidden" id="transferPropertyId">
                     <input type="hidden" id="currentOwner">
                     <div class="form-group">
-                        <label for="newOwner">Nombre del Comprador:</label>
+                        <label for="newOwner">Nombre del Cliente:</label>
                         <input type="text" id="newOwner" required>
                     </div>
                     <div class="form-group">
-                        <label for="saleValue">Monto a Cancelar:</label>
-                        <div class="price-display">Q<span id="saleValueDisplay"></span></div>
-                        <input type="hidden" id="saleValue" required>
+                        <label for="saleValue">Monto a Pagar:</label>
+                        <input type="number" id="saleValue" style="display: none;" required>
+                        <div class="price-display" style="font-size: 1.1em; margin-top: 5px;">Q<span id="saleValueDisplay"></span></div>
                     </div>
                     <button type="submit" class="button">Confirmar Compra</button>
                 </form>
@@ -338,7 +338,7 @@
             document.getElementById(modalId).style.display = 'none';
         };
 
-        window.showTransferModal = async function(propertyId, currentOwner) {
+        window.showTransferModal = async function(propertyId, currentOwner, isSeller = false) {
             const properties = await contract.getProperties();
             const property = properties.find(p => p.id === propertyId);
             
@@ -346,6 +346,13 @@
             document.getElementById('currentOwner').value = currentOwner;
             document.getElementById('saleValue').value = property.value;
             document.getElementById('saleValueDisplay').textContent = property.value.toLocaleString();
+            
+            // Enable price editing for sellers during resale
+            const saleValueInput = document.getElementById('saleValue');
+            saleValueInput.readOnly = !isSeller;
+            saleValueInput.style.display = isSeller ? 'block' : 'none';
+            document.getElementById('saleValueDisplay').style.display = isSeller ? 'none' : 'block';
+            
             document.getElementById('transferPropertyModal').style.display = 'block';
         };
 
@@ -415,9 +422,7 @@
                 <div><strong>Área:</strong> ${property.area} metros cuadrados</div>
                 <div><strong>Valor:</strong> Q${property.value}</div>
                 ${userType === 'seller' ? 
-                    property.status === 'sold' ?
-                    `<button class="button" onclick="showTransferModal('${property.id}', '${property.owner}')">Revender Propiedad</button>` :
-                    `<button class="button" onclick="showTransferModal('${property.id}', '${property.owner}')">Vender Propiedad</button>`
+                    `<button class="button" onclick="showTransferModal('${property.id}', '${property.owner}', true)">Vender Propiedad</button>`
                 : `<button class="button" onclick="showTransferModal('${property.id}', '${property.owner}')">Comprar Propiedad</button>`
                 }
                 <button class="button" onclick="showPropertyHistory('${property.id}')">Ver Historial</button>
@@ -522,19 +527,31 @@
             const newOwner = document.getElementById('newOwner').value;
             const saleValue = Number(document.getElementById('saleValue').value);
 
-            // Check if sale value exceeds buyer's spending limit (1 million)
-            const SPENDING_LIMIT = 1000000;
-            if (saleValue > SPENDING_LIMIT) {
-                alert('Fondos insuficientes. El límite de compra es Q1,000,000');
-                return;
+            // For buyers, check spending limit
+            if (!isSellerAuthenticated) {
+                const SPENDING_LIMIT = 1000000;
+                if (saleValue > SPENDING_LIMIT) {
+                    alert('Fondos insuficientes. El límite de compra es Q1,000,000');
+                    return;
+                }
             }
 
             const success = await contract.transferProperty(propertyId, currentOwner, newOwner, saleValue);
             if (success) {
-                alert('Propiedad transferida exitosamente');
                 closeModal('transferPropertyModal');
                 document.getElementById('transferPropertyForm').reset();
-                showAvailableProperties('seller');
+                
+                if (!isSellerAuthenticated) {
+                    const result = confirm('¡Felicitaciones por tu compra!\n\nPresiona OK para continuar comprando\nPresiona Cancelar para cerrar sesión');
+                    if (result) {
+                        showAvailableProperties('buyer');
+                    } else {
+                        returnToHome();
+                    }
+                } else {
+                    alert('Propiedad transferida exitosamente');
+                    showAvailableProperties('seller');
+                }
             } else {
                 alert('Error: No se pudo transferir la propiedad');
             }
