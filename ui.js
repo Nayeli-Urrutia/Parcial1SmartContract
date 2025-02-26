@@ -55,19 +55,20 @@ export function closeModal(modalId) {
 }
 
 export async function showTransferModal(propertyId, currentOwner, isSeller = false) {
-    const properties = await contract.getProperties();
-    const property = properties.find(p => p.id === propertyId);
-    
+    const property = (await contract.getProperties()).find(p => p.id === propertyId);
+    if (!property) return;
+
+    // Add validation for buyer's purchase limit
+    if (!isSeller && property.value > 1000000) {
+        alert('Lo sentimos, no puede comprar propiedades con valor superior a Q1,000,000');
+        return;
+    }
+
     document.getElementById('transferPropertyId').value = propertyId;
     document.getElementById('currentOwner').value = currentOwner;
+    document.getElementById('transferModalTitle').textContent = isSeller ? 'Vender Propiedad' : 'Comprar Propiedad';
     document.getElementById('saleValue').value = property.value;
     document.getElementById('saleValueDisplay').textContent = property.value.toLocaleString();
-    
-    const saleValueInput = document.getElementById('saleValue');
-    saleValueInput.readOnly = !isSeller;
-    saleValueInput.style.display = isSeller ? 'block' : 'none';
-    document.getElementById('saleValueDisplay').style.display = isSeller ? 'none' : 'block';
-    
     document.getElementById('transferPropertyModal').style.display = 'block';
 }
 
