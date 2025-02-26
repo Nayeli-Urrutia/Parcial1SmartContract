@@ -22,6 +22,8 @@
             <div class="section">
                 <button class="button register" onclick="showRegisterPropertyModal()">Registrar Nueva Propiedad</button>
                 <button class="button" onclick="showAvailableProperties('seller')">Ver Propiedades Disponibles</button>
+                <!-- New button to modify property value -->
+               
             </div>
         </div>
 
@@ -64,6 +66,22 @@
                         <input type="number" id="value" required>
                     </div>
                     <button type="submit" class="button register">Registrar Propiedad</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal para modificar valor de propiedad -->
+        <div id="modifyPropertyValueModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('modifyPropertyValueModal')">&times;</span>
+                <h2>Modificar Valor de Propiedad</h2>
+                <form id="modifyPropertyValueForm" onsubmit="handleModifyPropertyValue(event)">
+                    <input type="hidden" id="modifyPropertyId">
+                    <div class="form-group">
+                        <label for="newValue">Nuevo Valor (Q):</label>
+                        <input type="number" id="newValue" required>
+                    </div>
+                    <button type="submit" class="button">Actualizar Valor</button>
                 </form>
             </div>
         </div>

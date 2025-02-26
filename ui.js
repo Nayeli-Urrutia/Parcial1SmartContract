@@ -199,7 +199,10 @@ function createPropertyCard(property, userType) {
         <div><strong>Área:</strong> ${property.area} metros cuadrados</div>
         <div><strong>Valor:</strong> Q${property.value}</div>
         ${userType === 'seller' ? 
-            `<button class="button" onclick="showTransferModal('${property.id}', '${property.owner}', true)">Vender Propiedad</button>`
+            `<div class="button-group">
+                <button class="button" onclick="showTransferModal('${property.id}', '${property.owner}', true)">Vender Propiedad</button>
+                <button class="button" onclick="showModifyPropertyValueModal('${property.id}')">Modificar Valor</button>
+            </div>`
         : `<button class="button" onclick="showTransferModal('${property.id}', '${property.owner}')">Comprar Propiedad</button>`
         }
         <button class="button" onclick="showPropertyHistory('${property.id}')">Ver Historial</button>
@@ -279,6 +282,36 @@ export function returnToHome() {
     document.getElementById('transactionsContainer').innerHTML = '';
 }
 
+export function showModifyPropertyValueModal(propertyId) {
+    if (!isSellerAuthenticated) {
+        showLoginModal();
+        return;
+    }
+    document.getElementById('modifyPropertyId').value = propertyId;
+    document.getElementById('modifyPropertyValueModal').style.display = 'block';
+}
+
+export async function handleModifyPropertyValue(event) {
+    event.preventDefault();
+    if (!isSellerAuthenticated) {
+        alert('Solo los vendedores pueden modificar el valor de las propiedades');
+        return;
+    }
+
+    const propertyId = document.getElementById('modifyPropertyId').value;
+    const newValue = Number(document.getElementById('newValue').value);
+
+    const success = await contract.modifyPropertyValue(propertyId, newValue);
+    if (success) {
+        alert('Valor de la propiedad actualizado exitosamente');
+        closeModal('modifyPropertyValueModal');
+        document.getElementById('modifyPropertyValueForm').reset();
+        showAvailableProperties('seller');
+    } else {
+        alert('Error: No se pudo modificar el valor de la propiedad');
+    }
+}
+
 // Initialize global functions
 Object.assign(window, {
     showLoginModal,
@@ -292,5 +325,7 @@ Object.assign(window, {
     handleTransferProperty,
     showAvailableProperties,
     showPropertyHistory,
-    returnToHome
+    returnToHome,
+    showModifyPropertyValueModal,
+    handleModifyPropertyValue
 });

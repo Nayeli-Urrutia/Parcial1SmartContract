@@ -92,6 +92,34 @@ class SmartContract {
             return [];
         }
     }
+
+    // Función para modificar el valor de una propiedad
+    async modifyPropertyValue(propertyId, newValue) {
+        try {
+            const property = this.properties.find(p => p.id === propertyId);
+            if (!property) {
+                return false;
+            }
+
+            const oldValue = property.value;
+            property.value = newValue;
+
+            // Record transaction
+            const transaction = {
+                property_id: propertyId,
+                type: 'MODIFICACION_VALOR',
+                oldValue,
+                newValue,
+                timestamp: new Date().toISOString()
+            };
+            this.transactions.push(transaction);
+
+            return true;
+        } catch (error) {
+            console.error('Error modifying property value:', error);
+            return false;
+        }
+    }
 }
 
 export default SmartContract;
