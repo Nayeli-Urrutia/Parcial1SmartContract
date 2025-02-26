@@ -118,6 +118,38 @@ export async function handleTransferProperty(event) {
 }
 
 // Property display functions
+export async function showMyProperties() {
+    const properties = await contract.getProperties();
+    const container = document.getElementById('propertyListContainer');
+    container.innerHTML = '<h2>Mis Propiedades</h2>';
+
+    const myProperties = properties.filter(p => p.status === 'sold');
+    if (myProperties.length === 0) {
+        container.innerHTML += '<p>No tienes propiedades registradas.</p>';
+    } else {
+        const propertiesContainer = document.createElement('div');
+        propertiesContainer.className = 'properties-grid';
+
+        myProperties.forEach((property) => {
+            const propertyCard = document.createElement('div');
+            propertyCard.className = 'property-card';
+            propertyCard.innerHTML = `
+                <h3>Propiedad ${property.id}</h3>
+                <div><strong>Propietario:</strong> ${property.owner}</div>
+                <div><strong>Ubicación:</strong> ${property.location}</div>
+                <div><strong>Área:</strong> ${property.area} metros cuadrados</div>
+                <div><strong>Valor:</strong> Q${property.value}</div>
+                <button class="button" onclick="showPropertyHistory('${property.id}')">Ver Historial</button>
+            `;
+            propertiesContainer.appendChild(propertyCard);
+        });
+
+        container.appendChild(propertiesContainer);
+    }
+
+    document.getElementById('transactionsContainer').innerHTML = '';
+}
+
 export async function showAvailableProperties(userType) {
     if (userType === 'seller' && !isSellerAuthenticated) {
         showLoginModal();
@@ -249,6 +281,7 @@ export function returnToHome() {
 // Initialize global functions
 Object.assign(window, {
     showLoginModal,
+    showMyProperties,
     selectRole,
     handleLogin,
     showRegisterPropertyModal,

@@ -1,6 +1,10 @@
 class SmartContract {
     constructor() {
-        this.properties = [];
+        this.properties = [
+            { id: '001', owner: 'Nayeli_Urrutia', location: 'Ciudad de Guatemala', area: 150, value: 100000, status: 'available' },
+            { id: '002', owner: 'Juan Perez', location: 'Antigua Guatemala', area: 200, value: 150000, status: 'available' },
+            { id: '003', owner: 'Maria Lopez', location: 'Quetzaltenango', area: 250, value: 200000, status: 'available' }
+        ];
         this.transactions = [];
     }
 
