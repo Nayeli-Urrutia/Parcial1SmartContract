@@ -184,6 +184,45 @@ class SmartContract {
             return false;
         }
     }
+
+    // Function to delete a property with confirmation code validation
+    async deleteProperty(propertyId, confirmationCode) {
+        try {
+            // Validate confirmation code
+            if (confirmationCode !== '1234') {
+                throw new Error('Invalid confirmation code');
+            }
+
+            // Find and validate property
+            const propertyIndex = this.properties.findIndex(p => p.id === propertyId);
+            if (propertyIndex === -1) {
+                throw new Error('Property not found');
+            }
+
+            const property = this.properties[propertyIndex];
+
+            // Record deletion transaction
+            const transaction = {
+                property_id: propertyId,
+                type: 'ELIMINACION',
+                deletedProperty: { ...property },
+                timestamp: new Date().toISOString(),
+                metadata: {
+                    deletionDate: new Date().toISOString(),
+                    propertyStatus: property.status
+                }
+            };
+            this.transactions.push(transaction);
+
+            // Remove the property
+            this.properties.splice(propertyIndex, 1);
+
+            return true;
+        } catch (error) {
+            console.error('Error deleting property:', error);
+            return false;
+        }
+    }
 }
 
 export default SmartContract;

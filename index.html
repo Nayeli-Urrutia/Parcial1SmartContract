@@ -108,6 +108,23 @@
             </div>
         </div>
 
+        <!-- Modal para eliminar propiedad -->
+        <div id="deletePropertyModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('deletePropertyModal')">&times;</span>
+                <h2>Eliminar Propiedad</h2>
+                <form id="deletePropertyForm" onsubmit="handleDeleteProperty(event)">
+                    <input type="hidden" id="deletePropertyId">
+                    <div class="form-group">
+                        <label for="confirmationCode">Código de Confirmación:</label>
+                        <input type="password" id="confirmationCode" required>
+                        <small>Ingrese el código de confirmación (1234) para eliminar la propiedad</small>
+                    </div>
+                    <button type="submit" class="button">Confirmar Eliminación</button>
+                </form>
+            </div>
+        </div>
+
         <!-- Modal para inicio de sesión -->
         <div id="loginModal" class="modal">
             <div class="modal-content">

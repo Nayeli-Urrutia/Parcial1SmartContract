@@ -202,12 +202,33 @@ function createPropertyCard(property, userType) {
             `<div class="button-group">
                 <button class="button" onclick="showTransferModal('${property.id}', '${property.owner}', true)">Vender Propiedad</button>
                 <button class="button" onclick="showModifyPropertyValueModal('${property.id}')">Modificar Valor</button>
+                <button class="button" onclick="showDeletePropertyModal('${property.id}')">Eliminar Propiedad</button>
             </div>`
         : `<button class="button" onclick="showTransferModal('${property.id}', '${property.owner}')">Comprar Propiedad</button>`
         }
         <button class="button" onclick="showPropertyHistory('${property.id}')">Ver Historial</button>
     `;
     return propertyCard;
+}
+
+function showDeletePropertyModal(propertyId) {
+    document.getElementById('deletePropertyId').value = propertyId;
+    document.getElementById('deletePropertyModal').style.display = 'block';
+}
+
+async function handleDeleteProperty(event) {
+    event.preventDefault();
+    const propertyId = document.getElementById('deletePropertyId').value;
+    const confirmationCode = document.getElementById('confirmationCode').value;
+
+    const success = await contract.deleteProperty(propertyId, confirmationCode);
+    if (success) {
+        alert('Propiedad eliminada exitosamente');
+        closeModal('deletePropertyModal');
+        showAvailableProperties('seller');
+    } else {
+        alert('Error al eliminar la propiedad. Verifique el código de confirmación.');
+    }
 }
 
 export async function showPropertyHistory(propertyId) {
@@ -311,21 +332,20 @@ export async function handleModifyPropertyValue(event) {
         alert('Error: No se pudo modificar el valor de la propiedad');
     }
 }
-
-// Initialize global functions
-Object.assign(window, {
-    showLoginModal,
-    showMyProperties,
-    selectRole,
-    handleLogin,
-    showRegisterPropertyModal,
-    closeModal,
-    showTransferModal,
-    handleRegisterProperty,
-    handleTransferProperty,
-    showAvailableProperties,
-    showPropertyHistory,
-    returnToHome,
-    showModifyPropertyValueModal,
-    handleModifyPropertyValue
-});
+// Make functions globally accessible
+window.selectRole = selectRole;
+window.showLoginModal = showLoginModal;
+window.handleLogin = handleLogin;
+window.showRegisterPropertyModal = showRegisterPropertyModal;
+window.showAvailableProperties = showAvailableProperties;
+window.showMyProperties = showMyProperties;
+window.showPropertyHistory = showPropertyHistory;
+window.showTransferModal = showTransferModal;
+window.showModifyPropertyValueModal = showModifyPropertyValueModal;
+window.showDeletePropertyModal = showDeletePropertyModal;
+window.handleRegisterProperty = handleRegisterProperty;
+window.handleModifyPropertyValue = handleModifyPropertyValue;
+window.handleTransferProperty = handleTransferProperty;
+window.handleDeleteProperty = handleDeleteProperty;
+window.closeModal = closeModal;
+window.returnToHome = returnToHome;
