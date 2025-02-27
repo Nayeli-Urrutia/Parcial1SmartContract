@@ -1,18 +1,20 @@
 // Node class to represent each transaction in the linked list with validation
 class Node {
     constructor(transaction) {
+        // Valida e inicializa un nodo de transacción
         if (!transaction || typeof transaction !== 'object') {
-            throw new Error('Invalid transaction data');
+            throw new Error('Datos de transacción inválidos');
         }
         this.transaction = this.validateTransaction(transaction);
         this.next = null;
     }
 
     validateTransaction(transaction) {
+        // Asegura que la transacción tenga todos los campos requeridos
         const requiredFields = ['property_id', 'type', 'timestamp'];
         for (const field of requiredFields) {
             if (!(field in transaction)) {
-                throw new Error(`Missing required field: ${field}`);
+                throw new Error(`Falta el campo requerido: ${field}`);
             }
         }
         return { ...transaction };
@@ -22,8 +24,9 @@ class Node {
 // Enhanced LinkedList class to manage transactions with improved functionality
 class LinkedList {
     constructor() {
+        // Inicializa una lista enlazada vacía
         this.head = null;
-        this.tail = null; // Added tail pointer for O(1) append
+        this.tail = null; // Puntero tail añadido para añadir en O(1)
         this.size = 0;
         this.transactionTypes = new Set(['REGISTRO', 'TRANSFERENCIA', 'MODIFICACION_VALOR']);
     }
@@ -31,24 +34,27 @@ class LinkedList {
     // Add a new transaction to the end of the list with validation
     append(transaction) {
         try {
+            // Valida el tipo de transacción antes de añadir
             if (!this.transactionTypes.has(transaction.type)) {
-                throw new Error(`Invalid transaction type: ${transaction.type}`);
+                throw new Error(`Tipo de transacción inválido: ${transaction.type}`);
             }
 
             const newNode = new Node(transaction);
             this.size++;
 
             if (!this.head) {
+                // Si la lista está vacía, establece el nuevo nodo como head y tail
                 this.head = newNode;
                 this.tail = newNode;
                 return true;
             }
 
+            // Añade el nuevo nodo al final de la lista
             this.tail.next = newNode;
             this.tail = newNode;
             return true;
         } catch (error) {
-            console.error('Error appending transaction:', error);
+            console.error('Error al añadir la transacción:', error);
             return false;
         }
     }
@@ -62,7 +68,7 @@ class LinkedList {
             while (current) {
                 let includeTransaction = true;
                 
-                // Apply filters if any
+                // Aplica filtros si los hay
                 for (const [key, value] of Object.entries(filters)) {
                     if (current.transaction[key] !== value) {
                         includeTransaction = false;
@@ -78,7 +84,7 @@ class LinkedList {
 
             return transactions;
         } catch (error) {
-            console.error('Error getting transactions:', error);
+            console.error('Error al obtener las transacciones:', error);
             return [];
         }
     }
@@ -87,7 +93,7 @@ class LinkedList {
     getPropertyTransactions(propertyId, startDate = null, endDate = null) {
         try {
             if (!propertyId) {
-                throw new Error('Property ID is required');
+                throw new Error('Se requiere el ID de la propiedad');
             }
 
             const filters = { property_id: propertyId };
@@ -104,7 +110,7 @@ class LinkedList {
 
             return transactions;
         } catch (error) {
-            console.error('Error getting property transactions:', error);
+            console.error('Error al obtener las transacciones de la propiedad:', error);
             return [];
         }
     }
@@ -117,12 +123,13 @@ class LinkedList {
     // Clear all transactions with validation
     clear() {
         try {
+            // Restablece la lista a un estado vacío
             this.head = null;
             this.tail = null;
             this.size = 0;
             return true;
         } catch (error) {
-            console.error('Error clearing transactions:', error);
+            console.error('Error al borrar las transacciones:', error);
             return false;
         }
     }
@@ -136,7 +143,7 @@ class LinkedList {
                     new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest
                 ) : null;
         } catch (error) {
-            console.error('Error getting latest property transaction:', error);
+            console.error('Error al obtener la última transacción de la propiedad:', error);
             return null;
         }
     }

@@ -1,8 +1,10 @@
 import SmartContract from './SmartContract.js';
 
+// Inicializa el contrato inteligente
 const contract = new SmartContract();
 window.contract = contract;
 
+// Variables de autenticación
 let isSellerAuthenticated = false;
 const SELLER_CREDENTIALS = {
     username: "Nayeli_Urrutia",
@@ -11,10 +13,12 @@ const SELLER_CREDENTIALS = {
 
 // Authentication functions
 export function showLoginModal() {
+    // Muestra el modal de inicio de sesión
     document.getElementById('loginModal').style.display = 'block';
 }
 
 export function selectRole(role) {
+    // Selecciona el rol de usuario y muestra el contenido correspondiente
     if (role === 'seller') {
         showLoginModal();
     } else {
@@ -25,6 +29,7 @@ export function selectRole(role) {
 }
 
 export async function handleLogin(event) {
+    // Maneja el inicio de sesión del usuario
     event.preventDefault();
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
@@ -43,6 +48,7 @@ export async function handleLogin(event) {
 
 // Modal management functions
 export function showRegisterPropertyModal() {
+    // Muestra el modal para registrar una nueva propiedad
     if (!isSellerAuthenticated) {
         showLoginModal();
         return;
@@ -51,14 +57,16 @@ export function showRegisterPropertyModal() {
 }
 
 export function closeModal(modalId) {
+    // Cierra el modal especificado
     document.getElementById(modalId).style.display = 'none';
 }
 
 export async function showTransferModal(propertyId, currentOwner, isSeller = false) {
+    // Muestra el modal para transferir una propiedad
     const property = (await contract.getProperties()).find(p => p.id === propertyId);
     if (!property) return;
 
-    // Add validation for buyer's purchase limit
+    // Validación para el límite de compra del comprador
     if (!isSeller && property.value > 1000000) {
         alert('Lo sentimos, no puede comprar propiedades con valor superior a Q1,000,000');
         return;
@@ -74,6 +82,7 @@ export async function showTransferModal(propertyId, currentOwner, isSeller = fal
 
 // Property management functions
 export async function handleRegisterProperty(event) {
+    // Maneja el registro de una nueva propiedad
     event.preventDefault();
     const propertyId = document.getElementById('propertyId').value;
     const owner = document.getElementById('owner').value;
@@ -93,6 +102,7 @@ export async function handleRegisterProperty(event) {
 }
 
 export async function handleTransferProperty(event) {
+    // Maneja la transferencia de una propiedad
     event.preventDefault();
     const propertyId = document.getElementById('transferPropertyId').value;
     const currentOwner = document.getElementById('currentOwner').value;
@@ -120,6 +130,7 @@ export async function handleTransferProperty(event) {
 
 // Property display functions
 export async function showMyProperties() {
+    // Muestra las propiedades del usuario
     const properties = await contract.getProperties();
     const container = document.getElementById('propertyListContainer');
     container.innerHTML = '<h2>Mis Propiedades</h2>';
@@ -152,6 +163,7 @@ export async function showMyProperties() {
 }
 
 export async function showAvailableProperties(userType) {
+    // Muestra las propiedades disponibles según el tipo de usuario
     if (userType === 'seller' && !isSellerAuthenticated) {
         showLoginModal();
         return;
@@ -190,6 +202,7 @@ export async function showAvailableProperties(userType) {
 }
 
 window.showPropertyDeeds = function(property) {
+    // Muestra las escrituras de la propiedad en un modal
     const modal = document.getElementById('propertyDeedsModal');
     const deedNumber = document.getElementById('deedNumber');
     const deedPropertyId = document.getElementById('deedPropertyId');
@@ -199,7 +212,7 @@ window.showPropertyDeeds = function(property) {
     const deedValue = document.getElementById('deedValue');
     const deedDate = document.getElementById('deedDate');
 
-    // Generate a unique deed number based on property ID
+    // Genera un número de escritura único basado en el ID de la propiedad
     deedNumber.textContent = `RGP-${property.id}-${new Date().getFullYear()}`;
     deedPropertyId.textContent = property.id;
     deedLocation.textContent = property.location;
@@ -216,12 +229,14 @@ window.showPropertyDeeds = function(property) {
 }
 
 function generateDeedNumber(propertyId) {
+    // Genera un número de escritura aleatorio
     const year = new Date().getFullYear();
     const randomNum = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
     return `${year}-${randomNum}-${propertyId}`;
 }
 
 function createPropertyCard(property, userType) {
+    // Crea una tarjeta de propiedad para mostrar en la interfaz
     const propertyCard = document.createElement('div');
     propertyCard.className = 'property-card';
     propertyCard.innerHTML = `
@@ -247,17 +262,20 @@ function createPropertyCard(property, userType) {
 }
 // Event listener for info button
 document.getElementById('infoButton').addEventListener('click', () => {
+    // Muestra el modal de información
     const modal = document.getElementById('infoModal');
     modal.style.display = 'block';
 });
 
 // Close info modal when clicking on the close button
 document.getElementById('infoModal').querySelector('.close').addEventListener('click', () => {
+    // Cierra el modal de información
     document.getElementById('infoModal').style.display = 'none';
 });
 
 // Close info modal when clicking outside of it
 window.addEventListener('click', (event) => {
+    // Cierra el modal de información si se hace clic fuera de él
     const modal = document.getElementById('infoModal');
     if (event.target === modal) {
         modal.style.display = 'none';
@@ -265,11 +283,13 @@ window.addEventListener('click', (event) => {
 });
 
 function showDeletePropertyModal(propertyId) {
+    // Muestra el modal para eliminar una propiedad
     document.getElementById('deletePropertyId').value = propertyId;
     document.getElementById('deletePropertyModal').style.display = 'block';
 }
 
 async function handleDeleteProperty(event) {
+    // Maneja la eliminación de una propiedad
     event.preventDefault();
     const propertyId = document.getElementById('deletePropertyId').value;
     const confirmationCode = document.getElementById('confirmationCode').value;
@@ -285,6 +305,7 @@ async function handleDeleteProperty(event) {
 }
 
 export async function showPropertyHistory(propertyId) {
+    // Muestra el historial de transacciones de una propiedad
     const transactions = await contract.getTransactions();
     const propertyTransactions = transactions
         .filter(t => t.property_id === propertyId)
@@ -349,6 +370,7 @@ export async function showPropertyHistory(propertyId) {
 }
 
 export function returnToHome() {
+    // Regresa a la pantalla de inicio
     document.getElementById('welcomeScreen').style.display = 'block';
     document.getElementById('sellerContent').style.display = 'none';
     document.getElementById('buyerContent').style.display = 'none';
@@ -357,6 +379,7 @@ export function returnToHome() {
 }
 
 export function showModifyPropertyValueModal(propertyId) {
+    // Muestra el modal para modificar el valor de una propiedad
     if (!isSellerAuthenticated) {
         showLoginModal();
         return;
@@ -366,6 +389,7 @@ export function showModifyPropertyValueModal(propertyId) {
 }
 
 export async function handleModifyPropertyValue(event) {
+    // Maneja la modificación del valor de una propiedad
     event.preventDefault();
     if (!isSellerAuthenticated) {
         alert('Solo los vendedores pueden modificar el valor de las propiedades');

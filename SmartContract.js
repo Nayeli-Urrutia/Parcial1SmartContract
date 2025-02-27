@@ -1,14 +1,19 @@
 import PropertySignature from './PropertySignature.js';
 
+// Clase SmartContract para gestionar propiedades y transacciones
 class SmartContract {
     constructor() {
+        // Inicializa la clase PropertySignature para manejar firmas digitales
         this.propertySignature = new PropertySignature();
+        // Lista de propiedades iniciales
         this.properties = [
             { id: '001', owner: 'Nayeli_Urrutia', location: 'Ciudad de Guatemala', area: 150, value: 100000, status: 'available', lastModified: new Date().toISOString() },
             { id: '002', owner: 'Juan Perez', location: 'Antigua Guatemala', area: 200, value: 150000, status: 'available', lastModified: new Date().toISOString() },
             { id: '003', owner: 'Maria Lopez', location: 'Quetzaltenango', area: 250, value: 200000, status: 'available', lastModified: new Date().toISOString() }
         ];
+        // Lista de transacciones
         this.transactions = [];
+        // Reglas de validación para las propiedades
         this.propertyValidationRules = {
             id: (id) => typeof id === 'string' && id.length > 0,
             owner: (owner) => typeof owner === 'string' && owner.length > 0,
@@ -18,30 +23,30 @@ class SmartContract {
         };
     }
 
-    // Validate property data against rules
+    // Valida los datos de la propiedad según las reglas
     validatePropertyData(property) {
         for (const [field, validator] of Object.entries(this.propertyValidationRules)) {
             if (!validator(property[field])) {
-                throw new Error(`Invalid ${field} value`);
+                throw new Error(`Valor de ${field} inválido`);
             }
         }
         return true;
     }
 
-    // Enhanced function to register a new property with validation
+    // Función mejorada para registrar una nueva propiedad con validación
     async registerProperty(propertyId, owner, location, area, value) {
         try {
-            // Validate input data
+            // Valida los datos de entrada
             const propertyData = { id: propertyId, owner, location, area, value };
             this.validatePropertyData(propertyData);
 
-            // Check if property exists
+            // Verifica si la propiedad ya existe
             const existingProperty = this.properties.find(p => p.id === propertyId);
             if (existingProperty) {
-                throw new Error('Property already exists');
+                throw new Error('La propiedad ya existe');
             }
 
-            // Create new property with timestamp
+            // Crea una nueva propiedad con marca de tiempo
             const property = { 
                 ...propertyData, 
                 status: 'available',
@@ -49,7 +54,7 @@ class SmartContract {
             };
             this.properties.push(property);
 
-            // Record transaction with additional metadata and signature
+            // Registra la transacción con metadatos adicionales y firma
             const transaction = {
                 property_id: propertyId,
                 type: 'REGISTRO',
@@ -64,45 +69,45 @@ class SmartContract {
                 }
             };
             
-            // Generate and store digital signature for the transaction
+            // Genera y almacena la firma digital para la transacción
             const signature = this.propertySignature.generateSignature(propertyId, transaction, 'private_key_' + propertyId);
             transaction.signature = signature;
             this.transactions.push(transaction);
 
             return true;
         } catch (error) {
-            console.error('Error registering property:', error);
+            console.error('Error al registrar la propiedad:', error);
             return false;
         }
     }
 
-    // Enhanced function to transfer property with validation and history tracking
+    // Función mejorada para transferir propiedad con validación y seguimiento de historial
     async transferProperty(propertyId, currentOwner, newOwner, saleValue) {
         try {
-            // Input validation
+            // Validación de entrada
             if (!propertyId || !currentOwner || !newOwner || typeof saleValue !== 'number' || saleValue <= 0) {
-                throw new Error('Invalid transfer parameters');
+                throw new Error('Parámetros de transferencia inválidos');
             }
 
-            // Verify property ownership and status
+            // Verifica la propiedad y el estado de propiedad
             const property = this.properties.find(p => p.id === propertyId);
             if (!property) {
-                throw new Error('Property not found');
+                throw new Error('Propiedad no encontrada');
             }
             if (property.owner !== currentOwner) {
-                throw new Error('Invalid property owner');
+                throw new Error('Propietario de la propiedad inválido');
             }
             if (property.status !== 'available') {
-                throw new Error('Property is not available for transfer');
+                throw new Error('La propiedad no está disponible para transferencia');
             }
 
-            // Update property details
+            // Actualiza los detalles de la propiedad
             property.owner = newOwner;
             property.status = 'sold';
             property.lastModified = new Date().toISOString();
-            property.value = saleValue; // Update property value to sale value
+            property.value = saleValue; // Actualiza el valor de la propiedad al valor de venta
 
-            // Record detailed transaction with signature
+            // Registra la transacción detallada con firma
             const transaction = {
                 property_id: propertyId,
                 type: 'TRANSFERENCIA',
@@ -117,14 +122,14 @@ class SmartContract {
                 }
             };
             
-            // Generate and store digital signature for the transfer
+            // Genera y almacena la firma digital para la transferencia
             const signature = this.propertySignature.generateSignature(propertyId, transaction, 'private_key_' + propertyId);
             transaction.signature = signature;
             this.transactions.push(transaction);
 
             return true;
         } catch (error) {
-            console.error('Error transferring property:', error);
+            console.error('Error al transferir la propiedad:', error);
             return false;
         }
     }
@@ -134,7 +139,7 @@ class SmartContract {
         try {
             return this.properties;
         } catch (error) {
-            console.error('Error getting properties:', error);
+            console.error('Error al obtener las propiedades:', error);
             return [];
         }
     }
@@ -146,35 +151,35 @@ class SmartContract {
                 new Date(b.timestamp) - new Date(a.timestamp)
             );
         } catch (error) {
-            console.error('Error getting transactions:', error);
+            console.error('Error al obtener las transacciones:', error);
             return [];
         }
     }
 
-    // Enhanced function to modify property value with validation and history tracking
+    // Función mejorada para modificar el valor de la propiedad con validación y seguimiento de historial
     async modifyPropertyValue(propertyId, newValue) {
         try {
-            // Input validation
+            // Validación de entrada
             if (!propertyId || typeof newValue !== 'number' || newValue <= 0) {
-                throw new Error('Invalid modification parameters');
+                throw new Error('Parámetros de modificación inválidos');
             }
 
-            // Find and validate property
+            // Encuentra y valida la propiedad
             const property = this.properties.find(p => p.id === propertyId);
             if (!property) {
-                throw new Error('Property not found');
+                throw new Error('Propiedad no encontrada');
             }
 
             const oldValue = property.value;
             if (newValue === oldValue) {
-                throw new Error('New value must be different from current value');
+                throw new Error('El nuevo valor debe ser diferente del valor actual');
             }
 
-            // Update property
+            // Actualiza la propiedad
             property.value = newValue;
             property.lastModified = new Date().toISOString();
 
-            // Record detailed transaction
+            // Registra la transacción detallada
             const transaction = {
                 property_id: propertyId,
                 type: 'MODIFICACION_VALOR',
@@ -191,28 +196,28 @@ class SmartContract {
 
             return true;
         } catch (error) {
-            console.error('Error modifying property value:', error);
+            console.error('Error al modificar el valor de la propiedad:', error);
             return false;
         }
     }
 
-    // Function to delete a property with confirmation code validation
+    // Función para eliminar una propiedad con validación de código de confirmación
     async deleteProperty(propertyId, confirmationCode) {
         try {
-            // Validate confirmation code
+            // Valida el código de confirmación
             if (confirmationCode !== '1234') {
-                throw new Error('Invalid confirmation code');
+                throw new Error('Código de confirmación inválido');
             }
 
-            // Find and validate property
+            // Encuentra y valida la propiedad
             const propertyIndex = this.properties.findIndex(p => p.id === propertyId);
             if (propertyIndex === -1) {
-                throw new Error('Property not found');
+                throw new Error('Propiedad no encontrada');
             }
 
             const property = this.properties[propertyIndex];
 
-            // Record deletion transaction
+            // Registra la transacción de eliminación
             const transaction = {
                 property_id: propertyId,
                 type: 'ELIMINACION',
@@ -225,12 +230,12 @@ class SmartContract {
             };
             this.transactions.push(transaction);
 
-            // Remove the property
+            // Elimina la propiedad
             this.properties.splice(propertyIndex, 1);
 
             return true;
         } catch (error) {
-            console.error('Error deleting property:', error);
+            console.error('Error al eliminar la propiedad:', error);
             return false;
         }
     }

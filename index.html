@@ -1,51 +1,64 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Metadatos del documento -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Propiedades</title>
+    <!-- Enlace al archivo de estilos CSS -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
+        <!-- Pantalla de bienvenida -->
         <div class="welcome-screen" id="welcomeScreen">
             <h1 class="welcome-title">Bienvenidos al Registro de Propiedades y Terrenos de Guatemala</h1>
+            <!-- Botón para mostrar información -->
             <button id="infoButton" class="option-button info">Información</button>
             <div class="options-container">
+                <!-- Botones para seleccionar el rol de usuario -->
                 <button class="option-button seller" onclick="selectRole('seller')">Vendedor</button>
                 <button class="option-button" onclick="selectRole('buyer')">Comprador</button>
             </div>
         </div>
 
+        <!-- Contenido principal para el vendedor -->
         <div class="main-content" id="sellerContent" style="display: none;">
             <h1>Panel de Vendedor</h1>
+            <!-- Botón para regresar a la pantalla de inicio -->
             <button class="button" onclick="returnToHome()">Regresar al Inicio</button>
             <div class="section">
+                <!-- Botones para registrar y ver propiedades -->
                 <button class="button register" onclick="showRegisterPropertyModal()">Registrar Nueva Propiedad</button>
                 <button class="button" onclick="showAvailableProperties('seller')">Ver Propiedades Disponibles</button>
-                <!-- New button to modify property value -->
-               
+                <!-- Botón nuevo para modificar el valor de la propiedad -->
             </div>
         </div>
 
+        <!-- Contenido principal para el comprador -->
         <div class="main-content" id="buyerContent" style="display: none;">
             <h1>Panel de Comprador</h1>
+            <!-- Botón para regresar a la pantalla de inicio -->
             <button class="button" onclick="returnToHome()">Regresar al Inicio</button>
             <div class="section">
+                <!-- Botones para ver propiedades del comprador y disponibles -->
                 <button class="button" onclick="showMyProperties()">Ver Mis Propiedades</button>
                 <button class="button" onclick="showAvailableProperties('buyer')">Ver Propiedades Disponibles</button>
             </div>
         </div>
 
+        <!-- Contenedor para la lista de propiedades -->
         <div id="propertyListContainer" class="property-list"></div>
+        <!-- Contenedor para las transacciones -->
         <div id="transactionsContainer"></div>
 
-        <!-- Modal para registrar propiedad -->
+        <!-- Modal para registrar una nueva propiedad -->
         <div id="registerPropertyModal" class="modal">
             <div class="modal-content">
                 <span class="close" onclick="closeModal('registerPropertyModal')">&times;</span>
                 <h2>Registrar Nueva Propiedad</h2>
                 <form id="registerPropertyForm" onsubmit="handleRegisterProperty(event)">
+                    <!-- Campos del formulario para registrar propiedad -->
                     <div class="form-group">
                         <label for="propertyId">ID de Propiedad:</label>
                         <input type="text" id="propertyId" required>
@@ -71,12 +84,13 @@
             </div>
         </div>
 
-        <!-- Modal para modificar valor de propiedad -->
+        <!-- Modal para modificar el valor de una propiedad -->
         <div id="modifyPropertyValueModal" class="modal">
             <div class="modal-content">
                 <span class="close" onclick="closeModal('modifyPropertyValueModal')">&times;</span>
                 <h2>Modificar Valor de Propiedad</h2>
                 <form id="modifyPropertyValueForm" onsubmit="handleModifyPropertyValue(event)">
+                    <!-- Campo oculto para el ID de la propiedad a modificar -->
                     <input type="hidden" id="modifyPropertyId">
                     <div class="form-group">
                         <label for="newValue">Nuevo Valor (Q):</label>
@@ -87,12 +101,13 @@
             </div>
         </div>
 
-        <!-- Modal para transferir propiedad -->
+        <!-- Modal para transferir una propiedad -->
         <div id="transferPropertyModal" class="modal">
             <div class="modal-content">
                 <span class="close" onclick="closeModal('transferPropertyModal')">&times;</span>
                 <h2 id="transferModalTitle">Comprar Propiedad</h2>
                 <form id="transferPropertyForm" onsubmit="handleTransferProperty(event)">
+                    <!-- Campos ocultos para el ID de la propiedad y el propietario actual -->
                     <input type="hidden" id="transferPropertyId">
                     <input type="hidden" id="currentOwner">
                     <div class="form-group">
@@ -109,12 +124,13 @@
             </div>
         </div>
 
-        <!-- Modal para eliminar propiedad -->
+        <!-- Modal para eliminar una propiedad -->
         <div id="deletePropertyModal" class="modal">
             <div class="modal-content">
                 <span class="close" onclick="closeModal('deletePropertyModal')">&times;</span>
                 <h2>Eliminar Propiedad</h2>
                 <form id="deletePropertyForm" onsubmit="handleDeleteProperty(event)">
+                    <!-- Campo oculto para el ID de la propiedad a eliminar -->
                     <input type="hidden" id="deletePropertyId">
                     <div class="form-group">
                         <label for="confirmationCode">Código de Confirmación:</label>
@@ -131,6 +147,7 @@
             <div class="modal-content">
                 <h2>Iniciar Sesión</h2>
                 <form id="loginForm" onsubmit="handleLogin(event)">
+                    <!-- Campos del formulario de inicio de sesión -->
                     <div class="form-group">
                         <label for="username">Usuario:</label>
                         <input type="text" id="username" required>
@@ -144,8 +161,9 @@
             </div>
         </div>
     </div>
+    <!-- Script para manejar la lógica de la interfaz de usuario -->
     <script type="module" src="ui.js"></script>
-<!-- Modal de Información -->
+    <!-- Modal de Información -->
     <div id="infoModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -183,44 +201,43 @@
         </div>
     </div>
     <!-- Modal para escrituras de propiedad -->
-        <div id="propertyDeedsModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('propertyDeedsModal')">&times;</span>
-                <h2>Escrituras de Propiedad</h2>
-                <div id="propertyDeedsContent" class="deeds-content">
-                    <div class="deed-section">
-                        <h3>Título de Propiedad</h3>
-                        <div class="deed-details">
-                            <div class="deed-header">
-                                <div class="seal">Registro General de la Propiedad</div>
-                                <div class="deed-number">No. <span id="deedNumber"></span></div>
+    <div id="propertyDeedsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('propertyDeedsModal')">&times;</span>
+            <h2>Escrituras de Propiedad</h2>
+            <div id="propertyDeedsContent" class="deeds-content">
+                <div class="deed-section">
+                    <h3>Título de Propiedad</h3>
+                    <div class="deed-details">
+                        <div class="deed-header">
+                            <div class="seal">Registro General de la Propiedad</div>
+                            <div class="deed-number">No. <span id="deedNumber"></span></div>
+                        </div>
+                        <div class="deed-body">
+                            <p>CONSTE POR EL PRESENTE DOCUMENTO que la propiedad identificada con el número <span id="deedPropertyId"></span>, ubicada en <span id="deedLocation"></span>, con un área de <span id="deedArea"></span> metros cuadrados, se encuentra debidamente inscrita en el Registro General de la Propiedad a nombre de <span id="deedOwner"></span>.</p>
+                            <div class="deed-details-section">
+                                <h4>Descripción Legal:</h4>
+                                <p>La propiedad colinda:</p>
+                                <ul>
+                                    <li>NORTE: Con propiedad particular</li>
+                                    <li>SUR: Con calle de por medio</li>
+                                    <li>ESTE: Con propiedad municipal</li>
+                                    <li>OESTE: Con propiedad particular</li>
+                                </ul>
                             </div>
-                            <div class="deed-body">
-                                <p>CONSTE POR EL PRESENTE DOCUMENTO que la propiedad identificada con el número <span id="deedPropertyId"></span>, ubicada en <span id="deedLocation"></span>, con un área de <span id="deedArea"></span> metros cuadrados, se encuentra debidamente inscrita en el Registro General de la Propiedad a nombre de <span id="deedOwner"></span>.</p>
-                                <div class="deed-details-section">
-                                    <h4>Descripción Legal:</h4>
-                                    <p>La propiedad colinda:</p>
-                                    <ul>
-                                        <li>NORTE: Con propiedad particular</li>
-                                        <li>SUR: Con calle de por medio</li>
-                                        <li>ESTE: Con propiedad municipal</li>
-                                        <li>OESTE: Con propiedad particular</li>
-                                    </ul>
-                                </div>
-                                <div class="deed-registration">
-                                    <p>Inscrito en el Registro General de la Propiedad</p>
-                                    <p>Fecha de Registro: <span id="deedDate"></span></p>
-                                    <p>Valor Registrado: Q<span id="deedValue"></span></p>
-                                </div>
+                            <div class="deed-registration">
+                                <p>Inscrito en el Registro General de la Propiedad</p>
+                                <p>Fecha de Registro: <span id="deedDate"></span></p>
+                                <p>Valor Registrado: Q<span id="deedValue"></span></p>
                             </div>
-                            <div class="deed-footer">
-                                <div class="signatures">
-                                    <div class="signature-line">____________________</div>
-                                    <div>Registrador General</div>
-                                </div>
-                                <div class="official-seal">
-                                    <div class="seal-image">SELLO</div>
-                                </div>
+                        </div>
+                        <div class="deed-footer">
+                            <div class="signatures">
+                                <div class="signature-line">____________________</div>
+                                <div>Registrador General</div>
+                            </div>
+                            <div class="official-seal">
+                                <div class="seal-image">SELLO</div>
                             </div>
                         </div>
                     </div>
@@ -228,6 +245,7 @@
             </div>
         </div>
     </div>
+    <!-- Script para manejar la lógica de la interfaz de usuario -->
     <script type="module" src="ui.js"></script>
 </body>
 </html>
