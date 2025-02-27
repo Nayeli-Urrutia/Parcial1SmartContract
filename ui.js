@@ -210,6 +210,24 @@ function createPropertyCard(property, userType) {
     `;
     return propertyCard;
 }
+// Event listener for info button
+document.getElementById('infoButton').addEventListener('click', () => {
+    const modal = document.getElementById('infoModal');
+    modal.style.display = 'block';
+});
+
+// Close info modal when clicking on the close button
+document.getElementById('infoModal').querySelector('.close').addEventListener('click', () => {
+    document.getElementById('infoModal').style.display = 'none';
+});
+
+// Close info modal when clicking outside of it
+window.addEventListener('click', (event) => {
+    const modal = document.getElementById('infoModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+});
 
 function showDeletePropertyModal(propertyId) {
     document.getElementById('deletePropertyId').value = propertyId;

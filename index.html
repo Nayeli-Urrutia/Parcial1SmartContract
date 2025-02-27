@@ -10,6 +10,7 @@
     <div class="container">
         <div class="welcome-screen" id="welcomeScreen">
             <h1 class="welcome-title">Bienvenidos al Registro de Propiedades y Terrenos de Guatemala</h1>
+            <button id="infoButton" class="option-button info">Información</button>
             <div class="options-container">
                 <button class="option-button seller" onclick="selectRole('seller')">Vendedor</button>
                 <button class="option-button" onclick="selectRole('buyer')">Comprador</button>
@@ -144,5 +145,42 @@
         </div>
     </div>
     <script type="module" src="ui.js"></script>
+<!-- Modal de Información -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Sistema de Registro de Propiedades en Blockchain</h2>
+            <div class="info-content">
+                <p>Este sistema innovador utiliza tecnología blockchain para revolucionar el registro de propiedades en Guatemala, abordando desafíos históricos en la gestión de tierras y propiedades.</p>
+                
+                <h3>Características Principales:</h3>
+                <ul>
+                    <li>Registro inmutable y transparente de propiedades</li>
+                    <li>Verificación instantánea de títulos de propiedad</li>
+                    <li>Prevención de fraudes en transacciones inmobiliarias</li>
+                    <li>Historial completo de transferencias de propiedad</li>
+                    <li>Acceso descentralizado a registros de propiedad</li>
+                </ul>
+
+                <h3>Beneficios:</h3>
+                <ul>
+                    <li>Mayor seguridad en la tenencia de tierras</li>
+                    <li>Reducción de conflictos territoriales</li>
+                    <li>Procesos de compra-venta más eficientes</li>
+                    <li>Transparencia en registros de propiedad</li>
+                    <li>Acceso mejorado para comunidades rurales</li>
+                </ul>
+
+                <h3>Impacto Social:</h3>
+                <p>Este sistema beneficia tanto a comunidades urbanas como rurales, facilitando:</p>
+                <ul>
+                    <li>Resolución más rápida de disputas de propiedad</li>
+                    <li>Mayor confianza en transacciones inmobiliarias</li>
+                    <li>Protección de derechos de propiedad</li>
+                    <li>Desarrollo económico sostenible</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

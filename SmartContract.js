@@ -1,5 +1,8 @@
+import PropertySignature from './PropertySignature.js';
+
 class SmartContract {
     constructor() {
+        this.propertySignature = new PropertySignature();
         this.properties = [
             { id: '001', owner: 'Nayeli_Urrutia', location: 'Ciudad de Guatemala', area: 150, value: 100000, status: 'available', lastModified: new Date().toISOString() },
             { id: '002', owner: 'Juan Perez', location: 'Antigua Guatemala', area: 200, value: 150000, status: 'available', lastModified: new Date().toISOString() },
@@ -46,7 +49,7 @@ class SmartContract {
             };
             this.properties.push(property);
 
-            // Record transaction with additional metadata
+            // Record transaction with additional metadata and signature
             const transaction = {
                 property_id: propertyId,
                 type: 'REGISTRO',
@@ -60,6 +63,10 @@ class SmartContract {
                     initialValue: value
                 }
             };
+            
+            // Generate and store digital signature for the transaction
+            const signature = this.propertySignature.generateSignature(propertyId, transaction, 'private_key_' + propertyId);
+            transaction.signature = signature;
             this.transactions.push(transaction);
 
             return true;
@@ -95,7 +102,7 @@ class SmartContract {
             property.lastModified = new Date().toISOString();
             property.value = saleValue; // Update property value to sale value
 
-            // Record detailed transaction
+            // Record detailed transaction with signature
             const transaction = {
                 property_id: propertyId,
                 type: 'TRANSFERENCIA',
@@ -109,6 +116,10 @@ class SmartContract {
                     valueChange: saleValue - property.value
                 }
             };
+            
+            // Generate and store digital signature for the transfer
+            const signature = this.propertySignature.generateSignature(propertyId, transaction, 'private_key_' + propertyId);
+            transaction.signature = signature;
             this.transactions.push(transaction);
 
             return true;
