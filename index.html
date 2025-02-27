@@ -182,5 +182,52 @@
             </div>
         </div>
     </div>
+    <!-- Modal para escrituras de propiedad -->
+        <div id="propertyDeedsModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('propertyDeedsModal')">&times;</span>
+                <h2>Escrituras de Propiedad</h2>
+                <div id="propertyDeedsContent" class="deeds-content">
+                    <div class="deed-section">
+                        <h3>Título de Propiedad</h3>
+                        <div class="deed-details">
+                            <div class="deed-header">
+                                <div class="seal">Registro General de la Propiedad</div>
+                                <div class="deed-number">No. <span id="deedNumber"></span></div>
+                            </div>
+                            <div class="deed-body">
+                                <p>CONSTE POR EL PRESENTE DOCUMENTO que la propiedad identificada con el número <span id="deedPropertyId"></span>, ubicada en <span id="deedLocation"></span>, con un área de <span id="deedArea"></span> metros cuadrados, se encuentra debidamente inscrita en el Registro General de la Propiedad a nombre de <span id="deedOwner"></span>.</p>
+                                <div class="deed-details-section">
+                                    <h4>Descripción Legal:</h4>
+                                    <p>La propiedad colinda:</p>
+                                    <ul>
+                                        <li>NORTE: Con propiedad particular</li>
+                                        <li>SUR: Con calle de por medio</li>
+                                        <li>ESTE: Con propiedad municipal</li>
+                                        <li>OESTE: Con propiedad particular</li>
+                                    </ul>
+                                </div>
+                                <div class="deed-registration">
+                                    <p>Inscrito en el Registro General de la Propiedad</p>
+                                    <p>Fecha de Registro: <span id="deedDate"></span></p>
+                                    <p>Valor Registrado: Q<span id="deedValue"></span></p>
+                                </div>
+                            </div>
+                            <div class="deed-footer">
+                                <div class="signatures">
+                                    <div class="signature-line">____________________</div>
+                                    <div>Registrador General</div>
+                                </div>
+                                <div class="official-seal">
+                                    <div class="seal-image">SELLO</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="ui.js"></script>
 </body>
 </html>

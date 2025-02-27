@@ -189,6 +189,38 @@ export async function showAvailableProperties(userType) {
     document.getElementById('transactionsContainer').innerHTML = '';
 }
 
+window.showPropertyDeeds = function(property) {
+    const modal = document.getElementById('propertyDeedsModal');
+    const deedNumber = document.getElementById('deedNumber');
+    const deedPropertyId = document.getElementById('deedPropertyId');
+    const deedLocation = document.getElementById('deedLocation');
+    const deedArea = document.getElementById('deedArea');
+    const deedOwner = document.getElementById('deedOwner');
+    const deedValue = document.getElementById('deedValue');
+    const deedDate = document.getElementById('deedDate');
+
+    // Generate a unique deed number based on property ID
+    deedNumber.textContent = `RGP-${property.id}-${new Date().getFullYear()}`;
+    deedPropertyId.textContent = property.id;
+    deedLocation.textContent = property.location;
+    deedArea.textContent = property.area;
+    deedOwner.textContent = property.owner;
+    deedValue.textContent = property.value;
+    deedDate.textContent = new Date().toLocaleDateString('es-GT', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+
+    modal.style.display = 'block';
+}
+
+function generateDeedNumber(propertyId) {
+    const year = new Date().getFullYear();
+    const randomNum = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    return `${year}-${randomNum}-${propertyId}`;
+}
+
 function createPropertyCard(property, userType) {
     const propertyCard = document.createElement('div');
     propertyCard.className = 'property-card';
@@ -206,7 +238,10 @@ function createPropertyCard(property, userType) {
             </div>`
         : `<button class="button" onclick="showTransferModal('${property.id}', '${property.owner}')">Comprar Propiedad</button>`
         }
-        <button class="button" onclick="showPropertyHistory('${property.id}')">Ver Historial</button>
+        <div class="button-group">
+            <button class="button" onclick="showPropertyHistory('${property.id}')">Ver Historial</button>
+            <button class="button" onclick="window.showPropertyDeeds(${JSON.stringify(property).replace(/"/g, "'")});">Ver Escrituras</button>
+        </div>
     `;
     return propertyCard;
 }
